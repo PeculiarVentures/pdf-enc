@@ -78,118 +78,118 @@ function EncryptionForm({ onEncrypt, isProcessing }: EncryptionFormProps) {
       )}
 
       <form onSubmit={handleSubmit}>
-          <div className="form-section">
-            <label htmlFor="userPassword" className="form-label">
-              User Password
-              <span className="label-hint">Optional — required only if you want the document to require a password to open</span>
-            </label>
-            <input
-              type="password"
-              id="userPassword"
-              value={userPassword}
-              onChange={(e) => setUserPassword(e.target.value)}
-              placeholder="Enter user password (optional)"
-              disabled={isProcessing}
-            />
-          </div>
-
-          <div className="form-section">
-            <label htmlFor="ownerPassword" className="form-label">
-              Owner Password
-              <span className="label-hint">Optional - for permissions management. Leave User Password empty to apply permissions without requiring a password to open.</span>
-            </label>
-            <input
-              type="password"
-              id="ownerPassword"
-              value={ownerPassword}
-              onChange={(e) => setOwnerPassword(e.target.value)}
-              placeholder="Enter owner password (optional)"
-              disabled={isProcessing}
-            />
-          </div>
-
-          <div className="form-section permissions">
-            <h3>Permissions</h3>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowPrint}
-                onChange={(e) => setAllowPrint(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow printing</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowCopy}
-                onChange={(e) => setAllowCopy(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow copying text and images</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowModify}
-                onChange={(e) => setAllowModify(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow document modification</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowAnnots}
-                onChange={(e) => setAllowAnnots(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow annotations (add/modify)</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowFillForms}
-                onChange={(e) => setAllowFillForms(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow filling existing form fields</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowAssembleDocument}
-                onChange={(e) => setAllowAssembleDocument(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow assembling document (insert/rotate/delete pages)</span>
-            </label>
-
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={allowPrintRepresentation}
-                onChange={(e) => setAllowPrintRepresentation(e.target.checked)}
-                disabled={isProcessing}
-              />
-              <span>Allow high-fidelity printing</span>
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            className="encrypt-button"
+        <div className="form-section">
+          <label htmlFor="userPassword" className="form-label">
+            User Password
+            <span className="label-hint">Optional — required only if you want the document to require a password to open</span>
+          </label>
+          <input
+            type="password"
+            id="userPassword"
+            value={userPassword}
+            onChange={(e) => setUserPassword(e.target.value)}
+            placeholder="Enter user password (optional)"
             disabled={isProcessing}
-          >
-            {isProcessing ? 'Processing...' : 'Encrypt & Download'}
-          </button>
-        </form>
+          />
+        </div>
+
+        <div className="form-section">
+          <label htmlFor="ownerPassword" className="form-label">
+            Owner Password
+            <span className="label-hint">Optional - for permissions management. Leave User Password empty to apply permissions without requiring a password to open.</span>
+          </label>
+          <input
+            type="password"
+            id="ownerPassword"
+            value={ownerPassword}
+            onChange={(e) => setOwnerPassword(e.target.value)}
+            placeholder="Enter owner password (optional)"
+            disabled={isProcessing}
+          />
+        </div>
+
+        <div className="form-section permissions">
+          <h3>Permissions</h3>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowPrint}
+              onChange={(e) => setAllowPrint(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow printing</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowCopy}
+              onChange={(e) => setAllowCopy(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow copying text and images</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowModify}
+              onChange={(e) => setAllowModify(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow document modification</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowAnnots}
+              onChange={(e) => setAllowAnnots(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow annotations (add/modify)</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowFillForms}
+              onChange={(e) => setAllowFillForms(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow filling existing form fields</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowAssembleDocument}
+              onChange={(e) => setAllowAssembleDocument(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow assembling document (insert/rotate/delete pages)</span>
+          </label>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={allowPrintRepresentation}
+              onChange={(e) => setAllowPrintRepresentation(e.target.checked)}
+              disabled={isProcessing}
+            />
+            <span>Allow high-fidelity printing</span>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className="encrypt-button"
+          disabled={isProcessing}
+        >
+          {isProcessing ? 'Processing...' : 'Encrypt & Download'}
+        </button>
+      </form>
     </div>
   );
 }

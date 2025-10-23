@@ -61,6 +61,15 @@ function App() {
         <p>Protect your PDF documents with password encryption</p>
       </header>
 
+      {/* Informational notice about local processing */}
+      <Notice
+        type="info"
+        title="Local processing"
+        message={
+          'Files you upload to this page are not sent anywhere — they are processed and stored only in your browser.'
+        }
+      />
+
       <main className="app-main">
         <FileUploader onFileSelect={handleFileSelect} currentFile={pdfFile} />
 

@@ -5,11 +5,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin: 0.75rem auto;
+  box-sizing: border-box;
+  /* Constrain width to match main content and center horizontally */
+  max-width: 720px;
+  width: calc(100% - 2rem);
 }
 
 .notice-body {
   flex: 1 1 auto;
+  text-align: center;
 }
 
 .notice-title {

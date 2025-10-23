@@ -1,5 +1,5 @@
 import * as pdfDoc from '@peculiar/pdf-doc';
-import { useState, DragEvent } from 'react';
+import { useState, useRef, DragEvent } from 'react';
 import './FileUploader.css';
 import Notice from './Notice';
 
@@ -17,18 +17,26 @@ interface FileUploaderProps {
 
 function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [notice, setNotice] = useState<null | { type: 'info'|'warning'|'error', title?: string, message: string }>(null);
+  const dragCounter = useRef<number>(0);
+  const [notice, setNotice] = useState<null | { type: 'info' | 'warning' | 'error', title?: string, message: string; }>(null);
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    // Increment counter so nested dragenter/dragleave don't prematurely cancel dragging
+    dragCounter.current += 1;
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    // Decrement counter and only stop dragging when it reaches zero
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setIsDragging(false);
+    }
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -39,6 +47,8 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    // reset counter and dragging state
+    dragCounter.current = 0;
     setIsDragging(false);
 
     const files = e.dataTransfer.files;
@@ -83,7 +93,7 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
       onFileSelect({ file, pdfDocument: doc, hasSignatures });
     } catch (err) {
       if (passwordRequired) {
-        setNotice({ type: 'info', title: 'Password protected', message: 'The selected PDF is password-protected and cannot be processed.' });
+        setNotice({ type: 'error', title: 'Password protected', message: 'The selected PDF is password-protected and cannot be processed.' });
         return;
       }
       setNotice({ type: 'error', title: 'Parse error', message: 'Failed to parse PDF file. It may be corrupted.' });
