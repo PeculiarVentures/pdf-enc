@@ -1,0 +1,47 @@
+{
+  "name": "pdf-enc",
+  "version": "1.0.0",
+  "description": "PDF encryption web application",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PeculiarVentures/pdf-enc.git"
+  },
+  "keywords": [
+    "pdf",
+    "encryption",
+    "react"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PeculiarVentures/pdf-enc/issues"
+  },
+  "homepage": "https://peculiarventures.github.io/pdf-enc/",
+  "dependencies": {
+    "@peculiar/pdf-core": "^1.17.1",
+    "@peculiar/pdf-doc": "^1.17.2",
+    "pkijs": "^3.3.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "webcrypto-liner": "^1.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9.38.0",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}
