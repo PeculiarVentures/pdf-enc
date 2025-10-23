@@ -1,14 +1,14 @@
 import { useState, FormEvent } from 'react';
 import './EncryptionForm.css';
 import { EncryptionParams } from '../utils/pdfEncryption';
+import Notice from './Notice';
 
 interface EncryptionFormProps {
   onEncrypt: (params: EncryptionParams) => void;
   isProcessing: boolean;
-  hasSignatures?: boolean | undefined;
 }
 
-function EncryptionForm({ onEncrypt, isProcessing, hasSignatures = false }: EncryptionFormProps) {
+function EncryptionForm({ onEncrypt, isProcessing }: EncryptionFormProps) {
   const [userPassword, setUserPassword] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
   const [allowPrint, setAllowPrint] = useState(true);
@@ -18,16 +18,15 @@ function EncryptionForm({ onEncrypt, isProcessing, hasSignatures = false }: Encr
   const [allowFillForms, setAllowFillForms] = useState(false);
   const [allowAssembleDocument, setAllowAssembleDocument] = useState(false);
   const [allowPrintRepresentation, setAllowPrintRepresentation] = useState(false);
+  const [showConfirmNotice, setShowConfirmNotice] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    // If both passwords are empty, require explicit confirmation from the user
+    // If both passwords are empty, show inline confirmation notice
     if (!userPassword && !ownerPassword) {
-      const ok = window.confirm(
-        'You did not provide a User or Owner password. The document will not be protected. Do you want to continue?'
-      );
-      if (!ok) return;
+      setShowConfirmNotice(true);
+      return;
     }
 
     onEncrypt({
@@ -45,15 +44,40 @@ function EncryptionForm({ onEncrypt, isProcessing, hasSignatures = false }: Encr
 
   return (
     <div className="encryption-form">
-      {/* Main heading changes depending on whether the document is signed */}
-      <h2>{hasSignatures ? 'Signed document detected' : 'Encryption Settings'}</h2>
+      <h2>Encryption Settings</h2>
 
-      {hasSignatures ? (
-        <div className="signature-warning">
-          <p>This document contains a digital signature and cannot be protected with password-based encryption. Encryption controls are disabled.</p>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit}>
+      {showConfirmNotice && (
+        <Notice
+          type="warning"
+          title="No passwords provided"
+          message={
+            'You did not provide a User or Owner password. The document will not be protected. Do you want to continue?'
+          }
+          actions={[
+            { label: 'Cancel', variant: 'default', onClick: () => setShowConfirmNotice(false) },
+            {
+              label: 'Continue',
+              variant: 'primary',
+              onClick: () => {
+                setShowConfirmNotice(false);
+                onEncrypt({
+                  userPassword,
+                  ownerPassword: ownerPassword || userPassword,
+                  allowPrint,
+                  allowCopy,
+                  allowModify,
+                  allowAnnots,
+                  allowFillForms,
+                  allowAssembleDocument,
+                  allowPrintRepresentation,
+                });
+              }
+            }
+          ]}
+        />
+      )}
+
+      <form onSubmit={handleSubmit}>
           <div className="form-section">
             <label htmlFor="userPassword" className="form-label">
               User Password
@@ -166,7 +190,6 @@ function EncryptionForm({ onEncrypt, isProcessing, hasSignatures = false }: Encr
             {isProcessing ? 'Processing...' : 'Encrypt & Download'}
           </button>
         </form>
-      )}
     </div>
   );
 }

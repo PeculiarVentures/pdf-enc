@@ -1,6 +1,7 @@
 import * as pdfDoc from '@peculiar/pdf-doc';
 import { useState, DragEvent } from 'react';
 import './FileUploader.css';
+import Notice from './Notice';
 
 
 interface ParsedPdfInfo {
@@ -16,6 +17,7 @@ interface FileUploaderProps {
 
 function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [notice, setNotice] = useState<null | { type: 'info'|'warning'|'error', title?: string, message: string }>(null);
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -45,7 +47,7 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
       if (file.type === 'application/pdf') {
         parseAndSend(file);
       } else {
-        alert('Please select a PDF file');
+        setNotice({ type: 'warning', title: 'Invalid file', message: 'Please select a PDF file' });
       }
     }
   };
@@ -57,7 +59,7 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
       if (file.type === 'application/pdf') {
         parseAndSend(file);
       } else {
-        alert('Please select a PDF file');
+        setNotice({ type: 'warning', title: 'Invalid file', message: 'Please select a PDF file' });
       }
     }
   };
@@ -77,19 +79,29 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
       // Detect signatures using the library helper if available
       const hasSignatures = doc.getSignatures().length > 0;
 
+      setNotice(null);
       onFileSelect({ file, pdfDocument: doc, hasSignatures });
     } catch (err) {
       if (passwordRequired) {
-        alert('The selected PDF is password-protected and cannot be processed.');
+        setNotice({ type: 'info', title: 'Password protected', message: 'The selected PDF is password-protected and cannot be processed.' });
         return;
       }
-      alert('Failed to parse PDF file. It may be corrupted.');
+      setNotice({ type: 'error', title: 'Parse error', message: 'Failed to parse PDF file. It may be corrupted.' });
       return;
     }
   };
 
   return (
     <div className="file-uploader">
+      {notice && (
+        <Notice
+          type={notice.type as any}
+          title={notice.title}
+          message={notice.message}
+          actions={[{ label: 'Dismiss', onClick: () => setNotice(null), variant: 'default' }]}
+        />
+      )}
+
       <div
         className={`drop-zone ${isDragging ? 'dragging' : ''} ${currentFile ? 'has-file' : ''}`}
         onDragEnter={handleDragEnter}

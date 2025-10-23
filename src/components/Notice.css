@@ -1,0 +1,76 @@
+.notice {
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.notice-body {
+  flex: 1 1 auto;
+}
+
+.notice-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.notice-message {
+  opacity: 0.95;
+}
+
+.notice-warning {
+  /* Darker warning tuned for the app theme */
+  background: rgba(250, 204, 21, 0.06);
+  border: 1px solid rgba(250, 204, 21, 0.14);
+  color: #f59e0b;
+}
+
+.notice-error {
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.14);
+  color: #f87171;
+}
+
+.notice-info {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  color: #a78bfa;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.notice-btn {
+  border: none;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.notice-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.notice-btn-default {
+  background: rgba(255,255,255,0.04);
+  color: inherit;
+}
+
+.notice-btn-danger {
+  background: rgba(220,38,38,0.08);
+  color: #dc2626;
+}
+
+@media (prefers-color-scheme: light) {
+  .notice {
+    color: inherit;
+  }
+}

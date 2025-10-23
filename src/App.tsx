@@ -1,20 +1,23 @@
 import { useState } from 'react';
+import * as pdfDoc from '@peculiar/pdf-doc';
 import './App.css';
 import FileUploader from './components/FileUploader';
 import EncryptionForm from './components/EncryptionForm';
+import Notice from './components/Notice';
 import { encryptPDF, EncryptionParams } from './utils/pdfEncryption';
-import * as pdfDoc from '@peculiar/pdf-doc';
 
 function App() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfDocument, setPdfDocument] = useState<pdfDoc.PDFDocument | null>(null);
   const [hasSignatures, setHasSignatures] = useState<boolean | null>(null);
+  const [signatureNoticeDismissed, setSignatureNoticeDismissed] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFileSelect = (info: { file: File; pdfDocument?: pdfDoc.PDFDocument; hasSignatures?: boolean; }) => {
     setPdfFile(info.file);
     setPdfDocument(info.pdfDocument ?? null);
     setHasSignatures(info.hasSignatures ?? null);
+    setSignatureNoticeDismissed(false);
   };
 
   const handleEncrypt = async (params: EncryptionParams) => {
@@ -62,11 +65,23 @@ function App() {
         <FileUploader onFileSelect={handleFileSelect} currentFile={pdfFile} />
 
         {pdfFile && (
-          <EncryptionForm
-            onEncrypt={handleEncrypt}
-            isProcessing={isProcessing}
-            hasSignatures={!!hasSignatures}
-          />
+          hasSignatures ? (
+            !signatureNoticeDismissed && (
+              <Notice
+                type="warning"
+                title="Signed document detected"
+                message={
+                  'This document contains a digital signature and cannot be protected with password-based encryption. Encryption controls are disabled.'
+                }
+                actions={[{ label: 'Dismiss', variant: 'default', onClick: () => setSignatureNoticeDismissed(true) }]}
+              />
+            )
+          ) : (
+            <EncryptionForm
+              onEncrypt={handleEncrypt}
+              isProcessing={isProcessing}
+            />
+          )
         )}
       </main>
     </div>
