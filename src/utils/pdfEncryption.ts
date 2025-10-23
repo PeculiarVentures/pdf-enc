@@ -18,21 +18,27 @@ pkijs.setEngine(
  * This is a placeholder for the actual encryption implementation.
  */
 
-interface EncryptionParams {
+export interface EncryptionParams {
   userPassword: string;
   ownerPassword: string;
-  allowPrint: boolean;
-  allowCopy: boolean;
-  allowModify: boolean;
+  // Standard permissions
+  allowPrint?: boolean;
+  allowCopy?: boolean;
+  allowModify?: boolean;
+  // Additional permissions to support full UserAccessPermissionFlags
+  allowAnnots?: boolean; // add/modify annotations
+  allowFillForms?: boolean; // fill existing form fields
+  allowNotUsed?: boolean; // deprecated bit (kept for compatibility)
+  allowAssembleDocument?: boolean; // assemble document (insert/rotate/delete pages)
+  allowPrintRepresentation?: boolean; // high-fidelity printing
 }
 
-export async function encryptPDF(
-  file: File,
+export async function encryptLoadedDocument(
+  doc: pdfDoc.PDFDocument,
   params: EncryptionParams
 ): Promise<Blob> {
-  const fileRaw = await file.arrayBuffer();
-
   let permissionFlags = 0 as pdfCore.UserAccessPermissionFlags;
+
   if (params.allowPrint) {
     permissionFlags |= pdfCore.UserAccessPermissionFlags.printDocument;
   }
@@ -42,16 +48,45 @@ export async function encryptPDF(
   if (params.allowModify) {
     permissionFlags |= pdfCore.UserAccessPermissionFlags.modifyContent;
   }
+  if (params.allowAnnots) {
+    permissionFlags |= pdfCore.UserAccessPermissionFlags.annots;
+  }
+  if (params.allowFillForms) {
+    permissionFlags |= pdfCore.UserAccessPermissionFlags.fillForms;
+  }
+  if (params.allowNotUsed) {
+    permissionFlags |= pdfCore.UserAccessPermissionFlags.notUsed;
+  }
+  if (params.allowAssembleDocument) {
+    permissionFlags |= pdfCore.UserAccessPermissionFlags.assembleDocument;
+  }
+  if (params.allowPrintRepresentation) {
+    permissionFlags |= pdfCore.UserAccessPermissionFlags.printRepresentation;
+  }
 
-  const doc = await pdfDoc.PDFDocument.load(fileRaw);
   const encryptedDoc = await doc.clone({
     userPassword: params.userPassword,
     ownerPassword: params.ownerPassword,
-    algorithm: "AES256", // AES-256 шифрование
+    algorithm: "AES256",
     permission: permissionFlags,
   });
 
   const encryptedRaw = await encryptedDoc.save();
 
   return new Blob([encryptedRaw], { type: 'application/pdf' });
+}
+
+// Backwards-compatible wrapper: accept File or PDFDocument
+export async function encryptPDF(
+  input: File | pdfDoc.PDFDocument,
+  params: EncryptionParams
+): Promise<Blob> {
+  if ((input as pdfDoc.PDFDocument).save) {
+    return encryptLoadedDocument(input as pdfDoc.PDFDocument, params);
+  }
+
+  const file = input as File;
+  const fileRaw = await file.arrayBuffer();
+  const doc = await pdfDoc.PDFDocument.load(fileRaw);
+  return encryptLoadedDocument(doc, params);
 }

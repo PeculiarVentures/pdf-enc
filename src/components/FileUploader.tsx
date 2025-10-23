@@ -1,8 +1,16 @@
+import * as pdfDoc from '@peculiar/pdf-doc';
 import { useState, DragEvent } from 'react';
 import './FileUploader.css';
 
+
+interface ParsedPdfInfo {
+  file: File;
+  pdfDocument?: pdfDoc.PDFDocument;
+  hasSignatures?: boolean;
+}
+
 interface FileUploaderProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (info: ParsedPdfInfo) => void;
   currentFile: File | null;
 }
 
@@ -35,7 +43,7 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
     if (files.length > 0) {
       const file = files[0];
       if (file.type === 'application/pdf') {
-        onFileSelect(file);
+        parseAndSend(file);
       } else {
         alert('Please select a PDF file');
       }
@@ -47,10 +55,36 @@ function FileUploader({ onFileSelect, currentFile }: FileUploaderProps) {
     if (files && files.length > 0) {
       const file = files[0];
       if (file.type === 'application/pdf') {
-        onFileSelect(file);
+        parseAndSend(file);
       } else {
         alert('Please select a PDF file');
       }
+    }
+  };
+
+  // Parse the PDF using @peculiar/pdf-doc to extract metadata and signatures
+  const parseAndSend = async (file: File) => {
+    let passwordRequired = false;
+    try {
+      const raw = await file.arrayBuffer();
+      const doc = await pdfDoc.PDFDocument.load(raw, {
+        onUserPassword: async () => {
+          passwordRequired = true;
+          throw new Error('Password required to open PDF');
+        }
+      });
+
+      // Detect signatures using the library helper if available
+      const hasSignatures = doc.getSignatures().length > 0;
+
+      onFileSelect({ file, pdfDocument: doc, hasSignatures });
+    } catch (err) {
+      if (passwordRequired) {
+        alert('The selected PDF is password-protected and cannot be processed.');
+        return;
+      }
+      alert('Failed to parse PDF file. It may be corrupted.');
+      return;
     }
   };
 

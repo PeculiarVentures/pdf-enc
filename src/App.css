@@ -1,10 +1,10 @@
 .app {
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1rem; /* reduce outer padding to fit better on smaller screens */
 }
 
 .app-header {
-  margin-bottom: 3rem;
+  margin-bottom: 1.75rem;
 }
 
 .app-header h1 {
@@ -22,9 +22,10 @@
 }
 
 .app-main {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.25rem; /* smaller gap so components fit vertically */
+  padding: 0 0.5rem;
 }

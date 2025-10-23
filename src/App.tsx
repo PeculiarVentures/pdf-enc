@@ -2,22 +2,19 @@ import { useState } from 'react';
 import './App.css';
 import FileUploader from './components/FileUploader';
 import EncryptionForm from './components/EncryptionForm';
-import { encryptPDF } from './utils/pdfEncryption';
-
-interface EncryptionParams {
-  userPassword: string;
-  ownerPassword: string;
-  allowPrint: boolean;
-  allowCopy: boolean;
-  allowModify: boolean;
-}
+import { encryptPDF, EncryptionParams } from './utils/pdfEncryption';
+import * as pdfDoc from '@peculiar/pdf-doc';
 
 function App() {
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfDocument, setPdfDocument] = useState<pdfDoc.PDFDocument | null>(null);
+  const [hasSignatures, setHasSignatures] = useState<boolean | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleFileSelect = (file: File) => {
-    setPdfFile(file);
+  const handleFileSelect = (info: { file: File; pdfDocument?: pdfDoc.PDFDocument; hasSignatures?: boolean; }) => {
+    setPdfFile(info.file);
+    setPdfDocument(info.pdfDocument ?? null);
+    setHasSignatures(info.hasSignatures ?? null);
   };
 
   const handleEncrypt = async (params: EncryptionParams) => {
@@ -26,9 +23,16 @@ function App() {
       return;
     }
 
+    // If we have a parsed PDFDocument, use it; otherwise fall back to reading the file
     setIsProcessing(true);
     try {
-      const encryptedBlob = await encryptPDF(pdfFile, params);
+      let encryptedBlob: Blob;
+      if (pdfDocument) {
+        encryptedBlob = await encryptPDF(pdfDocument, params);
+      } else {
+        // fallback: read raw file and load inside utility
+        encryptedBlob = await encryptPDF(pdfFile as any, params);
+      }
 
       // Download the encrypted PDF
       const url = URL.createObjectURL(encryptedBlob);
@@ -61,6 +65,7 @@ function App() {
           <EncryptionForm
             onEncrypt={handleEncrypt}
             isProcessing={isProcessing}
+            hasSignatures={!!hasSignatures}
           />
         )}
       </main>
